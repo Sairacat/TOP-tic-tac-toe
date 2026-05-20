@@ -1,8 +1,6 @@
 function makeGrid() {
     const clicked = false;
-    const clickedByX = false;
-    const clickedByO = false;
-    return {clicked, clickedByX, clickedByO};
+    return {clicked};
 }
 
 const game = (function() {
@@ -29,45 +27,66 @@ const game = (function() {
         gameboard.push(grid);
     }
 
-    const play = function() {
-        let index = e.target.id;
+    const play = function(e) {
+        let index = Number(e.target.id);
+        console.log(`index is ${index}`);
         if(gameboard[index].clicked) {
             console.log('This grid has been clicked! Choose another one!');
             return;
         }else {
-            if(this.name === 'X') {
+            if(isX) {
                 gameboard[index].clicked = true;
-                gameboard[index].clickedByX =true;
                 selectedByX.push(index);
                 step++;
-            }else if(this.name === 'O') {
+                console.log('X has moved');
+            }else if(isO) {
                 gameboard[index].clicked = true;
-                gameboard[index].clickedByO = true;
                 selectedByO.push(index);
                 step++;
+                console.log('O has moved');
             }
 
         }
 
-        if(step > 4) {
-            if(this.name === 'X') {
+        if(step > 4 && step < 9) {
+            if(isX) {
                 for(const pattern of winningPatterns) {
                     if(pattern.every(item => selectedByX.includes(item))) {
-                        pointOfX++
+                        pointOfX++;
                         console.log('X win!');
                     }
                 }
-            }else if(this.name === 'O') {
-                for(pattern of winningPatterns) {
+            }else if(isO) {
+                for(const pattern of winningPatterns) {
                     if(pattern.every(item => selectedByO.includes(item))) {
-                        pointOfO++
+                        pointOfO++;
                         console.log('O win!');
                     }
                 }
             }
-        }else if(step === 9) {
-            console.log('It\'s a draw');
         }
+        
+        if(step === 9) {
+            if(isX) {
+                for(const pattern of winningPatterns) {
+                    if(pattern.every(item => selectedByX.includes(item))) {
+                        pointOfX++;
+                        console.log('X win!');
+                    }
+                }
+            }else {
+                console.log('It\'s a draw')
+            }
+
+
+        }
+
+        changeSide();
+        console.log(isX);
+        console.log(isO);
+        console.log(step);
+        console.log(selectedByX);
+        console.log(selectedByO);
     }
 
     const showPoint = function() {
@@ -78,11 +97,13 @@ const game = (function() {
         }
     }
 
+    const showTurn = function() {
+        return isX;
+    }
+
     const restart = function() {
         for(const grid of gameboard) {
             grid.clicked = false;
-            grid.clickedByX = false;
-            grid.clickedByO = false;
         }
         selectedByX.length = 0;
         selectedByO.length = 0;
@@ -91,14 +112,36 @@ const game = (function() {
         console.log('Game has restarted!')
     }
 
+    const changeSide = function() {
+        isX = isO;
+        isO = !isX;
+    }
+
     return {
         createPlayer(name) {
-            return {name, play, showPoint};
+            return {name, play, showTurn};
         },
-        restart
+        restart,
+        showPoint
     }
 })()
 
 
 const playerX = game.createPlayer('X');
 const playerO = game.createPlayer('O');
+
+const domGridBoard = document.querySelector('.gameboard')
+domGridBoard.addEventListener('click', function(e) {
+    let isTurnOfX = playerX.showTurn();
+    if(e.target.textContent) {
+        console.log('choose another one!')
+        return
+    }
+    if(isTurnOfX) {
+        playerX.play(e);
+        e.target.textContent = '❌';
+    }else {
+        playerO.play(e)
+        e.target.textContent = '⭕️';
+    }
+})
