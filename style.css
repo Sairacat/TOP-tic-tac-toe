@@ -59,6 +59,10 @@ body {
     margin: 50px auto;
 }
 
+.gameboard:hover {
+  cursor: pointer;
+}
+
 .gamegrid {
     border: 2px solid black;
     display: flex;

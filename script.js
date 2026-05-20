@@ -5,17 +5,21 @@ function makeGrid() {
     return {clicked, clickedByX, clickedByO};
 }
 
-function gameStart() {
+const game = (function() {
     const gameboard = [];
+
+    let isX = true;
+    let isO = false;
 
     let pointOfX = 0;
     let pointOfO = 0;
     let step = 0;
+    
     const selectedByX = [];
     const selectedByO = [];
     const winningPatterns = [
         [0, 1, 2], [3, 4, 5], [6, 7, 8],
-        [0, 3, 6], [1, 4, 7], [2, 5, 6],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
         [0, 4, 8], [2, 4, 6]
     ]
 
@@ -25,7 +29,8 @@ function gameStart() {
         gameboard.push(grid);
     }
 
-    const play = function(index) {
+    const play = function() {
+        let index = e.target.id;
         if(gameboard[index].clicked) {
             console.log('This grid has been clicked! Choose another one!');
             return;
@@ -46,7 +51,7 @@ function gameStart() {
 
         if(step > 4) {
             if(this.name === 'X') {
-                for(pattern of winningPatterns) {
+                for(const pattern of winningPatterns) {
                     if(pattern.every(item => selectedByX.includes(item))) {
                         pointOfX++
                         console.log('X win!');
@@ -73,15 +78,27 @@ function gameStart() {
         }
     }
 
-    return {play, showPoint};
-}
+    const restart = function() {
+        for(const grid of gameboard) {
+            grid.clicked = false;
+            grid.clickedByX = false;
+            grid.clickedByO = false;
+        }
+        selectedByX.length = 0;
+        selectedByO.length = 0;
+        step = 0;
 
-function createPlayer(name) {
-    const {play, showPoint} = gameMethod;
-    return {name, play, showPoint};
-}
+        console.log('Game has restarted!')
+    }
+
+    return {
+        createPlayer(name) {
+            return {name, play, showPoint};
+        },
+        restart
+    }
+})()
 
 
-const gameMethod = gameStart();
-const playerX = createPlayer('X');
-const playerO = createPlayer('O');
+const playerX = game.createPlayer('X');
+const playerO = game.createPlayer('O');
