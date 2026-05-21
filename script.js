@@ -12,7 +12,9 @@ const game = (function() {
     let pointOfX = 0;
     let pointOfO = 0;
     let step = 0;
-    let gameFinshed = false
+    let gameFinshed = false;
+    let xHasWon = false;
+    let oHasWon = false;
     
     const selectedByX = [];
     const selectedByO = [];
@@ -58,14 +60,6 @@ const game = (function() {
         console.log(selectedByO);
     }
 
-    const showPoint = function() {
-        if(this.name === 'X') {
-            console.log(`Points of X is ${pointOfX}`);
-        }else if(this.name ==='O') {
-            console.log(`Points of O is ${pointOfO}`);
-        }
-    }
-
     const showTurn = function() {
         return isX;
     }
@@ -80,6 +74,13 @@ const game = (function() {
         selectedByX.length = 0;
         selectedByO.length = 0;
         step = 0;
+        isX = true;
+        isO = false;
+        gameFinshed = false;
+        xHasWon = false;
+        oHasWon = false;
+        messageOfX.textContent = '';
+        messageOfO.textContent = '';
 
         console.log('Game has restarted!')
     }
@@ -97,6 +98,7 @@ const game = (function() {
                         pointOfX++;
                         console.log('X win!');
                         gameFinshed = true;
+                        xHasWon = true;
                     }
                 }
             }else if(isO) {
@@ -105,6 +107,7 @@ const game = (function() {
                         pointOfO++;
                         console.log('O win!');
                         gameFinshed = true;
+                        oHasWon = true;
                     }
                 }
             }
@@ -117,6 +120,7 @@ const game = (function() {
                         pointOfX++;
                         console.log('X win!');
                         gameFinshed = true;
+                        xHasWon = true;
                     }
                 }
             }else {
@@ -124,10 +128,35 @@ const game = (function() {
                 gameFinshed = true;
             }
         }
+
+        updatePoints();
+        showWinnerMessage();
     }
 
     const showGameHasFinishedOrNot = function() {
         return gameFinshed;
+    }
+
+    const showWinnerMessage = function() {
+        if(gameFinshed) {
+            if(xHasWon) {
+                messageOfX.textContent = 'X has Won!!';
+                messageOfO.textContent = 'O has Lost!!';
+            }else if(oHasWon) {
+                messageOfX.textContent = 'X has Lost!!';
+                messageOfO.textContent = 'O has Won!!';
+            }else {
+                messageOfX.textContent = 'It\'s a draw';
+                messageOfO.textContent = 'It\'s a draw';
+            }
+        }else {
+            return;
+        }
+    }
+
+    const updatePoints = function() {
+        domPointsOfX.textContent = pointOfX;
+        domPointsOfO.textContent = pointOfO;
     }
 
     return {
@@ -135,7 +164,6 @@ const game = (function() {
             return {name, play, showTurn};
         },
         restart,
-        showPoint,
         showGameHasFinishedOrNot
     }
 })()
@@ -146,7 +174,11 @@ const playerO = game.createPlayer('O');
 
 const domGridBoard = document.querySelector('.gameboard');
 const restartBtn = document.querySelector('.restart-btn');
-const gameGrids = document.querySelectorAll('.gamegrid')
+const gameGrids = document.querySelectorAll('.gamegrid');
+const domPointsOfX = document.querySelector('.pointsofx');
+const domPointsOfO = document.querySelector('.pointsofo');
+const messageOfX = document.querySelector('.messageofx');
+const messageOfO = document.querySelector('.messageofo')
 
 
 domGridBoard.addEventListener('click', function(e) {

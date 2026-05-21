@@ -104,4 +104,35 @@ body {
 
 .x-side {
   grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.O-side {
+  grid-column: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-size: 120px;
+  margin-bottom: 60px;
+}
+
+.points {
+  font-size: 60px;
+  margin-bottom: 30px;
+}
+
+.pointsofx,
+.pointsofo {
+  font-size: 80px;
+  margin-bottom: 20px;
+}
+
+.messageofx,
+.messageofo {
+  font-size: 30px;
 }
