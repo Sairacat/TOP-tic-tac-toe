@@ -114,7 +114,6 @@ const game = (function() {
         }
         
         if(step === 9) {
-            if(isX) {
                 for(const pattern of winningPatterns) {
                     if(pattern.every(item => selectedByX.includes(item))) {
                         pointOfX++;
@@ -123,10 +122,11 @@ const game = (function() {
                         xHasWon = true;
                     }
                 }
-            }else {
+
+                if(!xHasWon){
                 console.log('It\'s a draw')
                 gameFinshed = true;
-            }
+                }
         }
 
         updatePoints();
