@@ -1,3 +1,5 @@
+'use strict'
+
 function makeGrid() {
     const clicked = false;
     return {clicked};
@@ -71,6 +73,7 @@ const game = (function() {
         for(const gamegrid of gameGrids) {
             gamegrid.textContent = '';
         }
+
         selectedByX.length = 0;
         selectedByO.length = 0;
         step = 0;
@@ -81,6 +84,9 @@ const game = (function() {
         oHasWon = false;
         messageOfX.textContent = '';
         messageOfO.textContent = '';
+        xSide.classList.remove('won', 'lost');
+        oSide.classList.remove('won', 'lost');
+
 
         console.log('Game has restarted!')
     }
@@ -142,9 +148,13 @@ const game = (function() {
             if(xHasWon) {
                 messageOfX.textContent = 'X has Won!!';
                 messageOfO.textContent = 'O has Lost!!';
+                xSide.classList.add('won');
+                oSide.classList.add('lost');
             }else if(oHasWon) {
                 messageOfX.textContent = 'X has Lost!!';
                 messageOfO.textContent = 'O has Won!!';
+                xSide.classList.add('lost');
+                oSide.classList.add('won')
             }else {
                 messageOfX.textContent = 'It\'s a draw';
                 messageOfO.textContent = 'It\'s a draw';
@@ -160,17 +170,13 @@ const game = (function() {
     }
 
     return {
-        createPlayer(name) {
-            return {name, play, showTurn};
-        },
+        play,
+        showTurn,
         restart,
         showGameHasFinishedOrNot
     }
 })()
 
-
-const playerX = game.createPlayer('X');
-const playerO = game.createPlayer('O');
 
 const domGridBoard = document.querySelector('.gameboard');
 const restartBtn = document.querySelector('.restart-btn');
@@ -178,25 +184,28 @@ const gameGrids = document.querySelectorAll('.gamegrid');
 const domPointsOfX = document.querySelector('.pointsofx');
 const domPointsOfO = document.querySelector('.pointsofo');
 const messageOfX = document.querySelector('.messageofx');
-const messageOfO = document.querySelector('.messageofo')
+const messageOfO = document.querySelector('.messageofo');
+const xSide = document.querySelector('.x-side');
+const oSide = document.querySelector('.o-side');
 
 
 domGridBoard.addEventListener('click', function(e) {
+    if(!e.target.classList.contains('gamegrid')) return;
     let gameStatus = game.showGameHasFinishedOrNot();
     if(gameStatus) {
         console.log('game has finished, please restart');
         return;
     }
-    let isTurnOfX = playerX.showTurn();
+    let isTurnOfX = game.showTurn();
     if(e.target.textContent) {
         console.log('choose another one!');
         return;
     }
     if(isTurnOfX) {
-        playerX.play(e);
+        game.play(e);
         e.target.textContent = '❌';
     }else {
-        playerO.play(e)
+        game.play(e)
         e.target.textContent = '⭕️';
     }
 })
