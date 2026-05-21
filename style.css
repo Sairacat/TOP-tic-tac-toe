@@ -50,13 +50,28 @@ body {
     min-height: 100vh;
 }
 
+.wrapper {
+  min-height: 100vh;
+  width: 100vw;
+  display: grid;
+  grid-template-columns: 1fr 600px 1fr;
+}
+
+.gameboard-wrapper {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .gameboard {
     width: 600px;
     height: 600px;
     display: grid;
     grid-template-columns: repeat(3, 200px);
     grid-template-rows: repeat(3, 200px);
-    margin: 50px auto;
+    margin-top: 20px;
+    margin-bottom: 30px;
 }
 
 .gameboard:hover {
@@ -87,3 +102,6 @@ body {
     border-right: none;
 }
 
+.x-side {
+  grid-column: 1;
+}

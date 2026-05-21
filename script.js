@@ -12,6 +12,7 @@ const game = (function() {
     let pointOfX = 0;
     let pointOfO = 0;
     let step = 0;
+    let gameFinshed = false
     
     const selectedByX = [];
     const selectedByO = [];
@@ -48,39 +49,7 @@ const game = (function() {
 
         }
 
-        if(step > 4 && step < 9) {
-            if(isX) {
-                for(const pattern of winningPatterns) {
-                    if(pattern.every(item => selectedByX.includes(item))) {
-                        pointOfX++;
-                        console.log('X win!');
-                    }
-                }
-            }else if(isO) {
-                for(const pattern of winningPatterns) {
-                    if(pattern.every(item => selectedByO.includes(item))) {
-                        pointOfO++;
-                        console.log('O win!');
-                    }
-                }
-            }
-        }
-        
-        if(step === 9) {
-            if(isX) {
-                for(const pattern of winningPatterns) {
-                    if(pattern.every(item => selectedByX.includes(item))) {
-                        pointOfX++;
-                        console.log('X win!');
-                    }
-                }
-            }else {
-                console.log('It\'s a draw')
-            }
-
-
-        }
-
+        examWhoWins();
         changeSide();
         console.log(isX);
         console.log(isO);
@@ -105,6 +74,9 @@ const game = (function() {
         for(const grid of gameboard) {
             grid.clicked = false;
         }
+        for(const gamegrid of gameGrids) {
+            gamegrid.textContent = '';
+        }
         selectedByX.length = 0;
         selectedByO.length = 0;
         step = 0;
@@ -117,12 +89,54 @@ const game = (function() {
         isO = !isX;
     }
 
+    const examWhoWins = function() {
+        if(step > 4 && step < 9) {
+            if(isX) {
+                for(const pattern of winningPatterns) {
+                    if(pattern.every(item => selectedByX.includes(item))) {
+                        pointOfX++;
+                        console.log('X win!');
+                        gameFinshed = true;
+                    }
+                }
+            }else if(isO) {
+                for(const pattern of winningPatterns) {
+                    if(pattern.every(item => selectedByO.includes(item))) {
+                        pointOfO++;
+                        console.log('O win!');
+                        gameFinshed = true;
+                    }
+                }
+            }
+        }
+        
+        if(step === 9) {
+            if(isX) {
+                for(const pattern of winningPatterns) {
+                    if(pattern.every(item => selectedByX.includes(item))) {
+                        pointOfX++;
+                        console.log('X win!');
+                        gameFinshed = true;
+                    }
+                }
+            }else {
+                console.log('It\'s a draw')
+                gameFinshed = true;
+            }
+        }
+    }
+
+    const showGameHasFinishedOrNot = function() {
+        return gameFinshed;
+    }
+
     return {
         createPlayer(name) {
             return {name, play, showTurn};
         },
         restart,
-        showPoint
+        showPoint,
+        showGameHasFinishedOrNot
     }
 })()
 
@@ -130,12 +144,21 @@ const game = (function() {
 const playerX = game.createPlayer('X');
 const playerO = game.createPlayer('O');
 
-const domGridBoard = document.querySelector('.gameboard')
+const domGridBoard = document.querySelector('.gameboard');
+const restartBtn = document.querySelector('.restart-btn');
+const gameGrids = document.querySelectorAll('.gamegrid')
+
+
 domGridBoard.addEventListener('click', function(e) {
+    let gameStatus = game.showGameHasFinishedOrNot();
+    if(gameStatus) {
+        console.log('game has finished, please restart');
+        return;
+    }
     let isTurnOfX = playerX.showTurn();
     if(e.target.textContent) {
-        console.log('choose another one!')
-        return
+        console.log('choose another one!');
+        return;
     }
     if(isTurnOfX) {
         playerX.play(e);
@@ -144,4 +167,7 @@ domGridBoard.addEventListener('click', function(e) {
         playerO.play(e)
         e.target.textContent = '⭕️';
     }
+})
+restartBtn.addEventListener('click', () => {
+    game.restart();
 })
