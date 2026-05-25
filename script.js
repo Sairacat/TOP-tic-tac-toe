@@ -18,6 +18,7 @@ const displayController = (function() {
         domElemnt.board.addEventListener('click', function(e) {
             if(!e.target.classList.contains('gamegrid')) return;
             if(game.showGameStatus()) return;
+
             let index = Number(e.target.id);
             const marker = game.showMarkerChoice();
             clickGrid(index);
@@ -32,11 +33,21 @@ const displayController = (function() {
             domElemnt.grids[computerIndex].textContent = marker.computer;
             showWinnerMessage();
             updatePoints();
+
         })
 
         domElemnt.restartBtn.addEventListener('click',function(e) {
             clickRestart();
             clearDisplay();
+        })
+
+        domElemnt.toggleBtn.addEventListener('click', function(e) {
+            game.changeMarker();
+            const marker = game.showMarkerChoice();
+            let computerIndex = game.computerChoice();
+            clickGrid(computerIndex);
+            domElemnt.grids[computerIndex].textContent = marker.computer;
+            
         })
     }
 
@@ -77,6 +88,7 @@ const displayController = (function() {
         domElemnt.messageOfO.textContent = '';
         domElemnt.xSide.classList.remove('won', 'lost');
         domElemnt.oSide.classList.remove('won', 'lost');
+        domElemnt.toggleBtn.checked = false;
     }
 
     return {eventHandler}
@@ -121,7 +133,6 @@ const game = (function() {
     const computerChoice = function() {
         const randomIndex = Math.floor(Math.random() * remainingGrid.length);
         const chosenGrid = remainingGrid[randomIndex];
-        remainingGrid.splice(randomIndex, 1);
         return chosenGrid;
     }
 
@@ -130,8 +141,8 @@ const game = (function() {
     }
 
     const changeMarker = function() {
-        marker.human = '⭕️',
-        marker.compuer = '❌'
+        marker.human = '⭕️';
+        marker.computer = '❌';
     }
 
     const play = function(index) {
@@ -193,6 +204,8 @@ const game = (function() {
         winner = '';
         remainingGrid.length = 0;
         remainingGrid.push(0, 1, 2, 3, 4, 5, 6, 7, 8);
+        marker.human = '❌';
+        marker.computer = '⭕️';
         console.log('Game has restarted!')
     }
 
@@ -260,6 +273,7 @@ const game = (function() {
         return gameFinshed;
     }
 
+
     return {
         play,
         restart,
@@ -268,7 +282,8 @@ const game = (function() {
         showPointsOfO,
         showGameStatus,
         computerChoice,
-        showMarkerChoice
+        showMarkerChoice,
+        changeMarker
     }
 })()
 
