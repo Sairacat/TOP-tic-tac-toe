@@ -18,6 +18,7 @@ const displayController = (function() {
         domElemnt.board.addEventListener('click', function(e) {
             if(!e.target.classList.contains('gamegrid')) return;
             if(game.showGameStatus()) return;
+            if(e.target.textContent) return;
 
             let index = Number(e.target.id);
             const marker = game.showMarkerChoice();
@@ -28,6 +29,7 @@ const displayController = (function() {
             updatePoints();
 
 
+            if(game.showGameStatus()) return;
             let computerIndex = game.computerChoice();
             clickGrid(computerIndex);
             domElemnt.grids[computerIndex].textContent = marker.computer;
@@ -42,6 +44,11 @@ const displayController = (function() {
         })
 
         domElemnt.toggleBtn.addEventListener('click', function(e) {
+            let currentStep = game.showStep();
+            if(currentStep > 0) {
+                e.preventDefault();
+                return;
+            }
             game.changeMarker();
             const marker = game.showMarkerChoice();
             let computerIndex = game.computerChoice();
@@ -159,24 +166,13 @@ const game = (function() {
                 selectedByX.push(index);
                 step++;
                 console.log('X has moved');
-                for(let i = 0; i < remainingGrid.length; i++) {
-                    if(remainingGrid[i] === index) {
-                        remainingGrid.splice(i, 1);
-                        break;
-                    }
-                }
+                remainingGrid.splice(remainingGrid.indexOf(index), 1);
                 console.log(remainingGrid);
             }else if(isO) {
                 gameboard[index].clicked = true;
                 selectedByO.push(index);
                 step++;
-                console.log('O has moved');
-                for(let i = 0; i < remainingGrid.length; i++) {
-                    if(remainingGrid[i] === index) {
-                        remainingGrid.splice(i, 1);
-                        break;
-                    }
-                }
+                remainingGrid.splice(remainingGrid.indexOf(index), 1);
                 console.log(remainingGrid);
             }
 
@@ -273,6 +269,9 @@ const game = (function() {
         return gameFinshed;
     }
 
+    const showStep = function() {
+        return step;
+    }
 
     return {
         play,
@@ -283,7 +282,8 @@ const game = (function() {
         showGameStatus,
         computerChoice,
         showMarkerChoice,
-        changeMarker
+        changeMarker,
+        showStep
     }
 })()
 
