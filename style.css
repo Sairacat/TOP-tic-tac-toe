@@ -146,3 +146,43 @@ body {
   background-color: red;
   color: white;
 }
+
+.buttom-part {
+  display: flex;
+  gap: 20px;
+}
+
+.toggle-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#human-selection {
+  appearance: none;
+  width: 44px;
+  height: 24px;
+  border: 1px solid black;
+  border-radius: 13px;
+}
+
+#human-selection:hover {
+  cursor: pointer;
+}
+
+#human-selection::before {
+  position: absolute;
+  content: '';
+  height: 20px;
+  width: 20px;
+  border-radius: 11px;
+  background-color: black;
+  top: 5px;
+  left: 24px;
+  transition: all 0.3s ease;
+}
+
+#human-selection:checked::before {
+  left: 42px;
+}

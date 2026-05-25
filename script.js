@@ -10,22 +10,26 @@ const displayController = (function() {
         messageOfX: document.querySelector('.messageofx'),
         messageOfO: document.querySelector('.messageofo'),
         xSide: document.querySelector('.x-side'),
-        oSide: document.querySelector('.o-side')
+        oSide: document.querySelector('.o-side'),
+        toggleBtn: document.querySelector('#human-selection')
     }
 
     const eventHandler = function(clickGrid, clickRestart) {
         domElemnt.board.addEventListener('click', function(e) {
             if(!e.target.classList.contains('gamegrid')) return;
+            if(game.showGameStatus()) return;
             let index = Number(e.target.id);
-            const marker = clickGrid(index);
-            if(marker === 'X') {
-                e.target.textContent = '❌';
-            }else if(marker === 'O') {
-                e.target.textContent = '⭕️';
-            }else {
-                return;
-            }
+            const marker = game.showMarkerChoice();
+            clickGrid(index);
+            e.target.textContent = marker.human;
 
+            showWinnerMessage();
+            updatePoints();
+
+
+            let computerIndex = game.computerChoice();
+            clickGrid(computerIndex);
+            domElemnt.grids[computerIndex].textContent = marker.computer;
             showWinnerMessage();
             updatePoints();
         })
@@ -95,6 +99,7 @@ const game = (function() {
     let gameFinshed = false;
     let winner;
     
+    const remainingGrid = [0, 1, 2, 3, 4, 5, 6, 7, 8];
     const selectedByX = [];
     const selectedByO = [];
     const winningPatterns = [
@@ -102,6 +107,10 @@ const game = (function() {
         [0, 3, 6], [1, 4, 7], [2, 5, 8],
         [0, 4, 8], [2, 4, 6]
     ]
+    const marker = {
+        human: '❌',
+        computer: '⭕️'
+    }
 
 
     for(let i = 0; i < 9; i++) {
@@ -109,11 +118,26 @@ const game = (function() {
         gameboard.push(grid);
     }
 
+    const computerChoice = function() {
+        const randomIndex = Math.floor(Math.random() * remainingGrid.length);
+        const chosenGrid = remainingGrid[randomIndex];
+        remainingGrid.splice(randomIndex, 1);
+        return chosenGrid;
+    }
+
+    const showMarkerChoice = function() {
+        return marker;
+    }
+
+    const changeMarker = function() {
+        marker.human = '⭕️',
+        marker.compuer = '❌'
+    }
+
     const play = function(index) {
         if(gameFinshed) {
             return;
         }
-        let marker;
         console.log(`index is ${index}`);
         if(gameboard[index].clicked) {
             console.log('This grid has been clicked! Choose another one!');
@@ -124,13 +148,25 @@ const game = (function() {
                 selectedByX.push(index);
                 step++;
                 console.log('X has moved');
-                marker = 'X';
+                for(let i = 0; i < remainingGrid.length; i++) {
+                    if(remainingGrid[i] === index) {
+                        remainingGrid.splice(i, 1);
+                        break;
+                    }
+                }
+                console.log(remainingGrid);
             }else if(isO) {
                 gameboard[index].clicked = true;
                 selectedByO.push(index);
                 step++;
                 console.log('O has moved');
-                marker = 'O';
+                for(let i = 0; i < remainingGrid.length; i++) {
+                    if(remainingGrid[i] === index) {
+                        remainingGrid.splice(i, 1);
+                        break;
+                    }
+                }
+                console.log(remainingGrid);
             }
 
         }
@@ -142,7 +178,6 @@ const game = (function() {
         console.log(step);
         console.log(selectedByX);
         console.log(selectedByO);
-        return marker;
     }
 
     const restart = function() {
@@ -156,6 +191,8 @@ const game = (function() {
         isO = false;
         gameFinshed = false;
         winner = '';
+        remainingGrid.length = 0;
+        remainingGrid.push(0, 1, 2, 3, 4, 5, 6, 7, 8);
         console.log('Game has restarted!')
     }
 
@@ -229,7 +266,9 @@ const game = (function() {
         showWinner,
         showPointsOfX,
         showPointsOfO,
-        showGameStatus
+        showGameStatus,
+        computerChoice,
+        showMarkerChoice
     }
 })()
 
@@ -238,39 +277,4 @@ displayController.eventHandler(game.play, game.restart);
 
 
 
-/* 
-const domGridBoard = document.querySelector('.gameboard');
-const restartBtn = document.querySelector('.restart-btn');
-const gameGrids = document.querySelectorAll('.gamegrid');
-const domPointsOfX = document.querySelector('.pointsofx');
-const domPointsOfO = document.querySelector('.pointsofo');
-const messageOfX = document.querySelector('.messageofx');
-const messageOfO = document.querySelector('.messageofo');
-const xSide = document.querySelector('.x-side');
-const oSide = document.querySelector('.o-side');
 
-
-domGridBoard.addEventListener('click', function(e) {
-    if(!e.target.classList.contains('gamegrid')) return;
-    let gameStatus = game.showGameHasFinishedOrNot();
-    if(gameStatus) {
-        console.log('game has finished, please restart');
-        return;
-    }
-    let isTurnOfX = game.showTurn();
-    if(e.target.textContent) {
-        console.log('choose another one!');
-        return;
-    }
-    if(isTurnOfX) {
-        game.play(e);
-        e.target.textContent = '❌';
-    }else {
-        game.play(e)
-        e.target.textContent = '⭕️';
-    }
-})
-restartBtn.addEventListener('click', () => {
-    game.restart();
-})
-*/
