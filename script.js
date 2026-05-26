@@ -33,6 +33,7 @@ const displayController = (function() {
             let computerIndex = game.computerChoice();
             clickGrid(computerIndex);
             domElemnt.grids[computerIndex].textContent = marker.computer;
+            
             showWinnerMessage();
             updatePoints();
 
@@ -144,7 +145,7 @@ const game = (function() {
     }
 
     const showMarkerChoice = function() {
-        return marker;
+        return {...marker};
     }
 
     const changeMarker = function() {
